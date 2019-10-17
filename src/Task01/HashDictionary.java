@@ -1,17 +1,11 @@
 package Task01;
-
-import com.sun.jmx.snmp.internal.SnmpSubSystem;
-import sun.awt.image.ImageWatched;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 public class HashDictionary<K extends Comparable<? super K>, V> implements Dictionary<K, V> {
     private int size;
     public LinkedList<Entry<K, V>>[] data;
-    private int load ;
+    private int load;
 
     HashDictionary(int load) {
         this.load = load;
@@ -32,7 +26,7 @@ public class HashDictionary<K extends Comparable<? super K>, V> implements Dicti
                 }
             }
         }
-        if(size + 1 == data.length) ensurecapacity();
+        if (size + 1 == data.length) ensurecapacity();
 
         if (data[adr] == null) {
             data[adr] = new LinkedList<>();
@@ -47,7 +41,12 @@ public class HashDictionary<K extends Comparable<? super K>, V> implements Dicti
 
     public void ensurecapacity() {
         int newLoad = 2 * data.length;
-        HashDictionary<K, V> newDict = new  HashDictionary<>(newLoad);
+
+        while(!istPrim(newLoad)){
+            ++newLoad;
+        }
+
+        HashDictionary<K, V> newDict = new HashDictionary<>(newLoad);
 
         for (LinkedList<Entry<K, V>> index : data) {
             if (index == null) continue;
@@ -105,11 +104,19 @@ public class HashDictionary<K extends Comparable<? super K>, V> implements Dicti
         return size;
     }
 
+    static boolean istPrim(int n) {
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) // i ist Teiler von n
+                return false;
+        }
+        return true;
+    }
+
     @Override
     public Iterator<Entry<K, V>> iterator() {
         return new Iterator<Entry<K, V>>() {
 
-            int index = 0;
+            int index = -1;
             Iterator<Entry<K, V>> listIterator;
 
             @Override

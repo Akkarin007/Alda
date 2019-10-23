@@ -36,7 +36,7 @@ public class Tui {
 
     public void input(String input) throws IOException {
 
-        String[] commands = input.split(" ");
+        String[] commands = input.split("\\s+");
 
         switch (commands[0]) {
             case "create":

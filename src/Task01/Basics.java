@@ -17,7 +17,7 @@ public final class Basics {
             input = sc.nextLine();
             if(input.equals("exit")) continue;
             tui.input(input);
-            System.out.println(input);
+            //System.out.println(input);
         } while (!input.equals("exit"));
     }
 }

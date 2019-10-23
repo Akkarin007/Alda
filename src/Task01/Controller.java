@@ -12,7 +12,7 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
 
     @Override
     public void read(int n, String path) throws IOException {
-
+        long start = System.nanoTime(); // aktuelle Zeit in nsec
         LineNumberReader in;
         in = new LineNumberReader(new FileReader(path));
         String line;
@@ -23,9 +23,14 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
             if (wf[0].length() == 0 || wf[1].length() == 0 || wf.length != 2) continue;
             if (n != 0) ++index;
             dict.insert(wf[0], wf[1]);
-            System.out.printf("inserted -> key: %s | value: %s\n", wf[0], wf[1]);
+            //System.out.printf("inserted -> key: %s | value: %s\n", wf[0], wf[1]);
         }
-        System.out.printf("read %d words!\n", dict.size() * 2);
+
+        long end = System.nanoTime();
+        double elapsedTime = (double) (end - start) / 1.0e06; // Zeit in msec
+
+        System.out.println("");
+        System.out.printf("\nBenötigte Zeit in msec: %f\n", elapsedTime);
     }
 
 
@@ -58,9 +63,17 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
     @Override
     public V search(K key) {
         if (key instanceof String) {
+            long start = System.nanoTime(); // aktuelle Zeit in nsec
+
             String value = dict.search(String.valueOf(key));
             if (value != null) System.out.println("my Value of Key is: " + value);
-            else System.out.println("Key not found! please insert it firs!");
+            else System.out.println("Key not found! please insert first!");
+
+            long end = System.nanoTime();
+            double elapsedTime = (double) (end - start) / 1.0e06; // Zeit in msec
+
+            System.out.println("");
+            System.out.printf("\nBenötigte Zeit in msec: %f\n", elapsedTime);
             return (V) value;
         } else {
             throw new InputMismatchException("need Strings as parameters");

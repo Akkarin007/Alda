@@ -10687,6 +10687,7 @@ landwirtschaft husbandry
 computer computer
 reaktiviert reactivated
 spielfeld field
+spielfeld field
 verschwendet dissipates
 sektor sector
 wuerzig spicily

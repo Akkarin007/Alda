@@ -15,6 +15,7 @@ public class HashDictionary<K extends Comparable<? super K>, V> implements Dicti
 
     @Override
     public V insert(K key, V value) {
+        ensurecapacity();
         int adr = myHasCode(key);
 
         if (search(key) != null) {
@@ -26,7 +27,7 @@ public class HashDictionary<K extends Comparable<? super K>, V> implements Dicti
                 }
             }
         }
-        if (size + 1 == data.length) ensurecapacity();
+
 
         if (data[adr] == null) {
             data[adr] = new LinkedList<>();
@@ -40,25 +41,29 @@ public class HashDictionary<K extends Comparable<? super K>, V> implements Dicti
     }
 
     public void ensurecapacity() {
-        int newLoad = 2 * data.length;
+        if (size + 1 == load) {
 
-        while(!istPrim(newLoad)){
-            ++newLoad;
-        }
+            int newLoad = 2 * data.length;
 
-        HashDictionary<K, V> newDict = new HashDictionary<>(newLoad);
-
-        for (LinkedList<Entry<K, V>> index : data) {
-            if (index == null) continue;
-            for (Entry<K, V> entry : index) {
-                newDict.insert(entry.getKey(), entry.getValue());
+            while (!istPrim(newLoad)) {
+                ++newLoad;
             }
-        }
-        data = new LinkedList[newLoad];
-        for (LinkedList<Entry<K, V>> index : newDict.data) {
-            if (index == null) continue;
-            for (Entry<K, V> entry : index) {
-                this.insert(entry.getKey(), entry.getValue());
+
+            HashDictionary<K, V> newDict = new HashDictionary<>(newLoad);
+
+            for (LinkedList<Entry<K, V>> index : data) {
+                if (index == null) continue;
+                for (Entry<K, V> entry : index) {
+                    newDict.insert(entry.getKey(), entry.getValue());
+                }
+            }
+            data = new LinkedList[newLoad];
+            load = newLoad;
+            for (LinkedList<Entry<K, V>> index : newDict.data) {
+                if (index == null) continue;
+                for (Entry<K, V> entry : index) {
+                    this.insert(entry.getKey(), entry.getValue());
+                }
             }
         }
     }

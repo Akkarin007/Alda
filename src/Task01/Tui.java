@@ -1,7 +1,12 @@
 package Task01;
 
 
+import java.io.IOException;
+import java.util.Objects;
+
 public class Tui {
+
+    ControllerInterface<String, String> controller = new Controller<>();
 
     public void printMenu() {
 
@@ -12,11 +17,11 @@ public class Tui {
                 length = s.length();
             }
         }
-        String[] description = {"Legt ein Dictionary an. SortedArrayDictionary ist voreingestellt. ",
-                "Liest die ersten n Einträge der Datei in das Dictionary ein. Wird n weggelassen, dann werden alle Einträge eingelesen.",
-                "Gibt alle Einträge des Dictionary in der Konsole aus (print).",
+        String[] description = {"Legt ein Task01.Dictionary an. SortedArrayDictionary ist voreingestellt. ",
+                "Liest die ersten n Einträge der Datei in das Task01.Dictionary ein. Wird n weggelassen, dann werden alle Einträge eingelesen.",
+                "Gibt alle Einträge des Task01.Dictionary in der Konsole aus (print).",
                 "Gibt das entsprechende englische Wort aus (search). ",
-                "Fügt ein neues Wortpaar in das Dictionary ein (insert).",
+                "Fügt ein neues Wortpaar in das Task01.Dictionary ein (insert).",
                 "Löscht einen Eintrag (remove).",
                 "beendet das Programm."};
 
@@ -29,27 +34,36 @@ public class Tui {
         }
     }
 
-    public void input(String input) {
-        System.out.println(input);
-        int a = input.indexOf(" ");
-        String commands = input.substring(0, a);
+    public void input(String input) throws IOException {
 
-        String temp = input.substring(a + 1);
-        int b = temp.indexOf(" ");
+        String[] commands = input.split(" ");
 
-
-
-        switch (commands) {
+        switch (commands[0]) {
             case "create":
-            case "read":
-            case "p":
-            case "s":
-            case "i":
-            case "r":
+                if (commands.length == 1) controller.create(null);
+                else controller.create(commands[1]);
                 break;
+            case "read":
+                if(commands.length == 3)controller.read(Integer.parseInt(commands[1]), commands[2]);
+                else if(commands.length == 2) controller.read(0, commands[1]);
+                else System.out.println("Please enter the path");
+                break;
+            case "p":
+                controller.print();
+                break;
+            case "s":
+                controller.search(commands[1]);
+                break;
+            case "i":
+                controller.insert(commands[1], commands[2]);
+                break;
+            case "r":
+                controller.remove(commands[1]);
+                break;
+            default:
+                System.out.println("wrong command! try again");
         }
     }
-
 
     private void print(String str) {
         System.out.println(str);

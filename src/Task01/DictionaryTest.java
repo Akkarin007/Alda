@@ -1,18 +1,13 @@
 /*
- * Test der verscheidenen Dictionary-Implementierungen
+ * Test der verscheidenen Task01.Dictionary-Implementierungen
  *
  * O. Bittel
  * 6.7.2017
  */
 package Task01;
 
-import org.w3c.dom.stylesheets.LinkStyle;
-
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Static test methods for different Dictionary implementations.
+ * Static test methods for different Task01.Dictionary implementations.
  *
  * @author oliverbittel
  */
@@ -23,8 +18,8 @@ public class DictionaryTest {
      */
     public static void main(String[] args) {
 
-//		testSortedArrayDictionary();
-        testHashDictionary();
+		testSortedArrayDictionary();
+//        testHashDictionary();
 //		testBinaryTreeDictionary();
     }
 
@@ -40,7 +35,7 @@ public class DictionaryTest {
     }
 
     //	private static void testBinaryTreeDictionary() {
-//		Dictionary<String, String> dict = new BinaryTreeDictionary<>();
+//		Task01.Dictionary<String, String> dict = new BinaryTreeDictionary<>();
 //		testDict(dict);
 //
 //        // Test für BinaryTreeDictionary mit prettyPrint
@@ -68,7 +63,7 @@ public class DictionaryTest {
 //        btd.prettyPrint();
 //
 //        System.out.println("For Each Loop:");
-//        for (Dictionary.Entry<Integer, Integer> e : btd) {
+//        for (Task01.Dictionary.Entry<Integer, Integer> e : btd) {
 //            System.out.println(e.getKey() + ": " + e.getValue());
 //        }
 //

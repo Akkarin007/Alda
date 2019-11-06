@@ -8,6 +8,12 @@ public class Tui {
 
     ControllerInterface<String, String> controller = new Controller<>();
 
+    Tui() throws IOException {
+        input("create BinaryTreeDictionary");
+        input("read 0 C:\\Users\\ismoz\\Documents\\GitHub\\Alda\\dtengl.txt");
+        print("BinaryTreeDictionary Created and Read!!!!!\n");
+    }
+
     public void printMenu() {
 
         String[] commands = {"create Implementierung", "read [n] Dateiname", "p", "s deutsch", "i deutsch englisch", "r deutsch", "exit"};
@@ -63,6 +69,7 @@ public class Tui {
             default:
                 System.out.println("wrong command! try again");
         }
+
     }
 
     private void print(String str) {

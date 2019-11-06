@@ -42,6 +42,9 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
         } else if (dict.equals("HashDictionary")) {
             this.dict = new HashDictionary<>(7);
             System.out.println("HashDictionary has been created!");
+        } else if (dict.equals("BinaryTreeDictionary")) {
+            this.dict = new BinaryTreeDictionary<>();
+            System.out.println("HashDictionary has been created!");
         } else System.out.println("Wrong implementation! try again!");
 
 

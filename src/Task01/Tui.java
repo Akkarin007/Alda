@@ -8,11 +8,6 @@ public class Tui {
 
     ControllerInterface<String, String> controller = new Controller<>();
 
-    Tui() throws IOException {
-        input("create BinaryTreeDictionary");
-        input("read 0 C:\\Users\\ismoz\\Documents\\GitHub\\Alda\\dtengl.txt");
-        print("BinaryTreeDictionary Created and Read!!!!!\n");
-    }
 
     public void printMenu() {
 
@@ -38,6 +33,13 @@ public class Tui {
             }
             print("\t" + description[i]);
         }
+    }
+
+    public void binarayTreeDictionaryTest() throws IOException {
+        input("create BinaryTreeDictionary");
+        input("read C:\\Users\\ismoz\\Documents\\GitHub\\Alda\\dtengl.txt");
+        print("BinaryTreeDictionary Created and Read!!!!!\n");
+        input("p");
     }
 
     public void input(String input) throws IOException {

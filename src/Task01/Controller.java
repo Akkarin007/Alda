@@ -44,7 +44,7 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
             System.out.println("HashDictionary has been created!");
         } else if (dict.equals("BinaryTreeDictionary")) {
             this.dict = new BinaryTreeDictionary<>();
-            System.out.println("HashDictionary has been created!");
+            System.out.println("BinaryTreeDictionary has been created!");
         } else System.out.println("Wrong implementation! try again!");
 
 
@@ -53,7 +53,9 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
 
     @Override
     public void print() {
-        if (dict != null) {
+        if (dict instanceof BinaryTreeDictionary){
+                 ((BinaryTreeDictionary<String, String>) dict).prettyPrint();
+        }else if (dict != null) {
             for (Dictionary.Entry<String, String> d : dict) {
                 System.out.println(d.getKey() + ": " + d.getValue());
             }

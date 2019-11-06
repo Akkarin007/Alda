@@ -12,6 +12,7 @@ public final class Basics {
         String input;
 
         tui.printMenu();
+        tui.binarayTreeDictionaryTest();
         do {
             System.out.print(">> ");
             input = sc.nextLine();

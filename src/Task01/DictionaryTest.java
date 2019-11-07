@@ -109,5 +109,4 @@ public class DictionaryTest {
             System.out.println(e.getKey() + ": " + e.getValue() + " search: " + dict.search(e.getKey()));
         }
     }
-
 }

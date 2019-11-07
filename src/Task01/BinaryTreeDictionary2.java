@@ -2,7 +2,7 @@ package Task01;
 
 import java.util.Iterator;
 
-public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements Dictionary<K, V> {
+public class BinaryTreeDictionary2<K extends Comparable<? super K>, V> implements Dictionary<K, V> {
 
     private V oldValue;
     private Node<K, V> root = null;
@@ -59,11 +59,9 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
         assert p.left != null;
         Node<K, V> q = p.left;
         p.left = q.right;
-        if (p.left != null)
-            p.left.parent = p;
         q.right = p;
-        if (q.right != null)
-            q.right.parent = q;
+        q.parent = p.parent;
+        p.parent = q;
         p.height = Math.max(getHeight(p.left), getHeight(p.right)) + 1;
         q.height = Math.max(getHeight(q.left), getHeight(q.right)) + 1;
         return q;
@@ -73,13 +71,11 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
         assert p.right != null;
         Node<K, V> q = p.right;
         p.right = q.left;
-        if (p.right != null)
-            p.right.parent = p;
         q.left = p;
-        if (q.left != null)
-            q.left.parent = q;
-        p.height = Math.max(getHeight(p.right), getHeight(p.left)) + 1;
-        q.height = Math.max(getHeight(q.right), getHeight(q.left)) + 1;
+        q.parent = p.parent;
+        p.parent = q;
+        p.height = Math.max(getHeight(p.left), getHeight(p.right)) + 1;
+        q.height = Math.max(getHeight(q.left), getHeight(q.right)) + 1;
         return q;
     }
 
@@ -121,19 +117,22 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
     }
 
     private Node<K, V> removeR(K key, Node<K, V> p) {
-        if (p == null) oldValue = null;
-        else if (key.compareTo(p.key) < 0) {
+        if (p == null) {
+            oldValue = null;
+        } else if (key.compareTo(p.key) < 0)
             p.left = removeR(key, p.left);
-            if (p.left != null)
-                p.left.parent = p;
-        }else if (key.compareTo(p.key) > 0){
+        else if (key.compareTo(p.key) > 0)
             p.right = removeR(key, p.right);
-        if (p.right != null)
-            p.right.parent = p;
-        }else if (p.left == null || p.right == null) {
+        else if (p.left == null || p.right == null) {
+            // p muss gelöscht werden
+            // und hat ein oder kein Kind:
+
+            if (p.left != null) p.left.parent = p.parent;
+            else if (p.right != null) p.right.parent = p.parent;
+
             oldValue = p.value;
-            p = (p.left != null) ? p.left : p.right;
             size--;
+            p = (p.left != null) ? p.left : p.right;
         } else {
             // p muss gelöscht werden und hat zwei Kinder:
             MinEntry<K, V> min = new MinEntry<K, V>();
@@ -152,12 +151,14 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
         if (p.left == null) {
             min.key = p.key;
             min.value = p.value;
+
+            p.right.parent = p.parent;
             p = p.right;
         } else
             p.left = getRemMinR(p.left, min);
-        p = balance(p);
         return p;
     }
+
     private static class MinEntry<K, V> {
         private K key;
         private V value;
@@ -216,26 +217,25 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
 
     @Override
     public Iterator<Entry<K, V>> iterator() {
-        return new Iterator<>() {
+        return new Iterator<Entry<K, V>>() {
 
-            Node<K, V> head;
+            Node<K, V> current = root;
 
             @Override
             public boolean hasNext() {
-                if (head == null && root != null)
-                    head = leftMostDescendant(root);
+                if (current == root)
+                    current = leftMostDescendant(root);
 
-                assert head != null;
-                if (head.right != null)
-                    head = leftMostDescendant(head.right);
+                if (current.right != null)
+                    current = leftMostDescendant(current.right);
                 else
-                    head = parentOfLeftMostAncestor(head);
-                return head != null;
+                    current = parentOfLeftMostAncestor(current);
+                return current != null;
             }
 
             @Override
             public Entry<K, V> next() {
-                return new Entry<>(head.key, head.value);
+                return new Entry<>(current.key, current.value);
             }
         };
     }

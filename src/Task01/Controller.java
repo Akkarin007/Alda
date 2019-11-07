@@ -10,7 +10,9 @@ import java.util.LinkedList;
 public class Controller<K, V> implements ControllerInterface<K, V> {
 
     Dictionary<String, String> dict;
-    LinkedList<String> deutscheList,engList;
+    LinkedList<String> deutscheList = new LinkedList<>();
+    LinkedList<String> engList = new LinkedList<>();
+
     @Override
     public void read(int n, String path) throws IOException {
         long start = System.nanoTime(); // aktuelle Zeit in nsec
@@ -57,7 +59,7 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
     @Override
     public void print() {
         if (dict instanceof BinaryTreeDictionary){
-                 ((BinaryTreeDictionary<String, String>) dict).prettyPrint();
+            ((BinaryTreeDictionary<String, String>) dict).prettyPrint();
         }else if (dict != null) {
             for (Dictionary.Entry<String, String> d : dict) {
                 System.out.println(d.getKey() + ": " + d.getValue());
@@ -83,9 +85,9 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
             }
             else {
 
-                    for(String s : engList){
-                        dict.search(s);
-                    }
+                for(String s : engList){
+                    dict.search(s);
+                }
                 System.out.println("Key not found! please insert first!");
             }
 

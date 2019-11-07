@@ -37,7 +37,7 @@ public class Tui {
 
     public void binarayTreeDictionaryTest() throws IOException {
         input("create BinaryTreeDictionary");
-        input("read C:\\Users\\ismoz\\Documents\\GitHub\\Alda\\dtengl.txt");
+        input("read C:\\Users\\ismoz\\Documents\\00_GitHub\\Alda\\dtengl.txt");
         print("BinaryTreeDictionary Created and Read!!!!!\n");
         input("p");
     }

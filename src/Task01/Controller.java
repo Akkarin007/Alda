@@ -4,12 +4,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.InputMismatchException;
+import java.util.LinkedList;
 
 
 public class Controller<K, V> implements ControllerInterface<K, V> {
 
     Dictionary<String, String> dict;
-
+    LinkedList<String> deutscheList,engList;
     @Override
     public void read(int n, String path) throws IOException {
         long start = System.nanoTime(); // aktuelle Zeit in nsec
@@ -23,6 +24,8 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
             if (wf[0].length() == 0 || wf[1].length() == 0 || wf.length != 2) continue;
             if (n != 0) ++index;
             dict.insert(wf[0], wf[1]);
+            deutscheList.add(wf[0]);
+            engList.add(wf[1]);
             //System.out.printf("inserted -> key: %s | value: %s\n", wf[0], wf[1]);
         }
 
@@ -71,8 +74,20 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
             long start = System.nanoTime(); // aktuelle Zeit in nsec
 
             String value = dict.search(String.valueOf(key));
-            if (value != null) System.out.println("my Value of Key is: " + value);
-            else System.out.println("Key not found! please insert first!");
+
+            if (value != null){
+                for(String s : deutscheList){
+                    dict.search(s);
+                }
+                System.out.println("my Value of Key is: " + value);
+            }
+            else {
+
+                    for(String s : engList){
+                        dict.search(s);
+                    }
+                System.out.println("Key not found! please insert first!");
+            }
 
             long end = System.nanoTime();
             double elapsedTime = (double) (end - start) / 1.0e06; // Zeit in msec

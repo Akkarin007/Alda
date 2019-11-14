@@ -222,11 +222,11 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
 
             @Override
             public boolean hasNext() {
-                if (head == null && root != null)
+                if (head == null && root != null) {
                     head = leftMostDescendant(root);
 
-                assert head != null;
-                if (head.right != null)
+                    assert head != null;
+                } else if (head.right != null)
                     head = leftMostDescendant(head.right);
                 else
                     head = parentOfLeftMostAncestor(head);

@@ -1,13 +1,13 @@
 /*
- * Test der verscheidenen Task01.Dictionary-Implementierungen
+ * Test der verscheidenen Dictionary-Implementierungen
  *
  * O. Bittel
  * 6.7.2017
  */
-package Task01;
+package test;
 
 /**
- * Static test methods for different Task01.Dictionary implementations.
+ * Static test methods for different Dictionary implementations.
  *
  * @author oliverbittel
  */
@@ -18,9 +18,9 @@ public class DictionaryTest {
      */
     public static void main(String[] args) {
 
-//		testSortedArrayDictionary();
-//        testHashDictionary();
-		testBinaryTreeDictionary();
+        //testSortedArrayDictionary();
+        //testHashDictionary();
+        testBinaryTreeDictionary();
     }
 
     private static void testSortedArrayDictionary() {
@@ -29,18 +29,15 @@ public class DictionaryTest {
     }
 
     private static void testHashDictionary() {
-        Dictionary<String, String> dict = new HashDictionary<>(3);
-
-		testDict(dict);
+        Dictionary<String, String> dict = new HashDictionary<>(3, 31);
+        testDict(dict);
     }
 
-    	private static void testBinaryTreeDictionary() {
-		Task01.Dictionary<String, String> dict = new BinaryTreeDictionary<>();
-		testDict(dict);
+    private static void testBinaryTreeDictionary() {
+        Dictionary<String, String> dict = new BinaryTreeDictionary<>();
+        //testDict(dict);
 
         // Test für BinaryTreeDictionary mit prettyPrint
-        // (siehe Aufgabe 10; Programmiertechnik 2).
-        // Pruefen Sie die Ausgabe von prettyPrint auf Papier nach.
         BinaryTreeDictionary<Integer, Integer> btd = new BinaryTreeDictionary<>();
         btd.insert(10, 0);
         btd.insert(20, 0);
@@ -63,7 +60,7 @@ public class DictionaryTest {
         btd.prettyPrint();
 
         System.out.println("For Each Loop:");
-        for (Task01.Dictionary.Entry<Integer, Integer> e : btd) {
+        for (Dictionary.Entry<Integer, Integer> e : btd) {
             System.out.println(e.getKey() + ": " + e.getValue());
         }
 
@@ -76,16 +73,14 @@ public class DictionaryTest {
         btd.remove(50);
         System.out.println("remove:");
         btd.prettyPrint();
-            for (Task01.Dictionary.Entry<Integer, Integer> e : btd) {
-                System.out.println(e.getKey() + ": " + e.getValue());
-            }
+
     }
 
     private static void testDict(Dictionary<String, String> dict) {
         System.out.println("===== New Test Case ========================");
         System.out.println("test " + dict.getClass());
         System.out.println(dict.insert("gehen", "go") == null);        // true
-        String s = new String("gehen");
+        String s = "gehen";
         System.out.println(dict.search(s) != null);                    // true
         System.out.println(dict.search(s).equals("go"));            // true
         System.out.println(dict.insert(s, "walk").equals("go"));    // true
@@ -108,8 +103,11 @@ public class DictionaryTest {
         dict.insert("fahren", "drive");
         dict.insert("spielen", "play");
         dict.insert("planen", "plan");
+        if (dict instanceof BinaryTreeDictionary)
+            ((BinaryTreeDictionary<String, String>) dict).prettyPrint();
         for (Dictionary.Entry<String, String> e : dict) {
             System.out.println(e.getKey() + ": " + e.getValue() + " search: " + dict.search(e.getKey()));
         }
     }
+
 }

@@ -26,13 +26,16 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
             if (wf[0].length() == 0 || wf[1].length() == 0 || wf.length != 2) continue;
             if (n != 0) ++index;
             dict.insert(wf[0], wf[1]);
-            deutscheList.add(wf[0]);
-            engList.add(wf[1]);
             //System.out.printf("inserted -> key: %s | value: %s\n", wf[0], wf[1]);
         }
 
         long end = System.nanoTime();
         double elapsedTime = (double) (end - start) / 1.0e06; // Zeit in msec
+
+        for (Dictionary.Entry<String, String> d : dict) {
+            deutscheList.add(d.getKey());
+            engList.add(d.getValue());
+        }
 
         System.out.println("");
         System.out.printf("\nBenötigte Zeit in msec: %f\n", elapsedTime);
@@ -60,6 +63,9 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
     public void print() {
         if (dict instanceof BinaryTreeDictionary){
             ((BinaryTreeDictionary<String, String>) dict).prettyPrint();
+//            for (Dictionary.Entry<String, String> e : dict) {
+//                System.out.println(e.getKey() + ": " + e.getValue() + " search: " + dict.search(e.getKey()));
+//            }
         }else if (dict != null) {
             for (Dictionary.Entry<String, String> d : dict) {
                 System.out.println(d.getKey() + ": " + d.getValue());
@@ -73,9 +79,10 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
     @Override
     public V search(K key) { //C:\Users\ismoz\Documents\00_GitHub\Alda\dtengl.txt
         if (key instanceof String) {
-            long start = System.nanoTime(); // aktuelle Zeit in nsec
 
             String value = dict.search(String.valueOf(key));
+
+            long start = System.nanoTime(); // aktuelle Zeit in nsec
 
             if (value != null){
                 for(String s : deutscheList){
@@ -84,7 +91,6 @@ public class Controller<K, V> implements ControllerInterface<K, V> {
                 System.out.println("my Value of Key is: " + value);
             }
             else {
-
                 for(String s : engList){
                     dict.search(s);
                 }

@@ -250,12 +250,10 @@ public class BinaryTreeDictionary<K extends Comparable<? super K>, V> implements
         if (head == null)
             return;
 
-        System.out.printf("%s%s", "-".repeat(Math.max(0, height)), head.key);
+        System.out.printf("%s%s head.parent: %s", "-".repeat(Math.max(0, height)), head.key, head.parent != null ? head.parent.key: "#");
 
         System.out.print("\n");
         prettyPrintR(head.left, height + 2);
         prettyPrintR(head.right, height + 2);
     }
-
-
 }

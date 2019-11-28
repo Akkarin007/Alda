@@ -27,19 +27,22 @@ public class TopologicalSort<V> {
 
     List<V> topSort(DirectedGraph<V> g) throws Exception {
         List<V> ts = new LinkedList<>(); // topologisch sortierte Folge
-        int[] inDegree = new int[g.getNumberOfVertexes()]; // Anz. noch nicht besuchter Vorgänger
+        Map<V, Integer> inDegree = new TreeMap<>(); // Anz. noch nicht besuchter Vorgänger
         Queue<V> q = new LinkedList<V>();
+
         for (var v : g.getVertexSet()) {
-            inDegree[(int) v - 1] = g.getInDegree(v);
-            if (inDegree[(int) v - 1] == 0)
+            inDegree.put(v, g.getInDegree(v));
+            if (inDegree.get(v) == 0)
                 q.add(v);
         }
         while (!q.isEmpty()) {
             V v = q.remove();
             ts.add(v);
-            for (var w : g.getSuccessorVertexSet(v))
-                if (--inDegree[(int) w - 1] == 0)
+            for (var w : g.getSuccessorVertexSet(v)) {
+                inDegree.put(w, inDegree.get(w) - 1);
+                if (inDegree.get(w) == 0)
                     q.add(w);
+            }
         }
         if (ts.size() != g.getNumberOfVertexes())
             return null; // Graph zyklisch;

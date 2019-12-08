@@ -101,7 +101,7 @@ public class ExampleGraph {
 		// Besuche Knoten 8 mit d = 11.47213595499958
 		// Besuche Knoten 6 mit d = 15.07768723046357
 		// Shortest Path = [3, 7, 8, 6] Distance = 15.07768723046357
-		
+
 		System.out.println("\nA-Star:");
 		ShortestPath<Integer> spAStar = new ShortestPath<Integer>(g, heuristic);
 		spAStar.searchShortestPath(3, 6);

@@ -25,7 +25,7 @@ public class ShortestPath<V> {
 
     Map<V, Double> dist; // Distanz für jeden Knoten
     Map<V, V> pred; // Vorgänger für jeden Knoten
-	private final DirectedGraph<V> myGraph;
+    private final DirectedGraph<V> myGraph;
     private Heuristic<V> heuristic;
 
 
@@ -74,37 +74,49 @@ public class ShortestPath<V> {
      * @param g Zielknoten
      */
     public void searchShortestPath(V s, V g) throws Exception {
-        shortestPath(s,g, myGraph, dist, pred);
+        shortestPath(s, g, myGraph, dist, pred);
+        System.out.println(pred);
     }
 
 
     boolean shortestPath(V s, V z, DirectedGraph<V> g, Map<V, Double> d, Map<V, V> p) throws Exception {
+
         List<V> kl = new LinkedList<>(); // leere Kandidatenliste
+
         for (var v : g.getVertexSet()) {
-            d.put(v, -1.0);
+            d.put(v, 0.0);
             p.put(v, null);
         }
-        d.put(s, 0.0); // Startknoten
-        kl.add(s);
 
+        d.put(s, 0.0); // Startknoten
+
+        kl.add(s);
+        System.out.println(kl);
         while (!kl.isEmpty()) {
+
             double minimalDist = Double.MAX_VALUE;
             int minimalIdx = 0;
             for (int i = 0; i < kl.size(); ++i)
                 if (d.get(kl.get(i)) < minimalDist) {
                     minimalDist = d.get(kl.get(i));
+
                     minimalIdx = i;
                 }
 
             V v = kl.remove(minimalIdx);
+            System.out.println("minimal: "+v);
+            if (v == z) // Zielknoten z erreicht
+                return true;
+
             for (var w : g.getSuccessorVertexSet(v)) {
-                if (d.get(w) == -1.0) // w noch nicht besucht und nicht in Kandidatenliste
+                if (!kl.contains(w) && d.get(w) == 0.0) // w noch nicht besucht und nicht in Kandidatenliste
                     kl.add(w);
                 if (d.get(v) + g.getWeight(v, w) < d.get(w)) {
                     p.put(w, v);
                     d.put(w, d.get(v) + g.getWeight(v, w));
                 }
             }
+            System.out.println(kl);
         }
         return false;
     }
@@ -117,7 +129,7 @@ public class ShortestPath<V> {
      * @throws IllegalArgumentException falls kein kürzester Weg berechnet wurde.
      */
     public List<V> getShortestPath() {
-        throw new UnsupportedOperationException("not supported yet");
+        return null;
     }
 
     /**
@@ -128,7 +140,12 @@ public class ShortestPath<V> {
      * @throws IllegalArgumentException falls kein kürzester Weg berechnet wurde.
      */
     public double getDistance() {
-    	throw new UnsupportedOperationException();
+        double sum = 0.0;
+        for (var map : dist.entrySet()) {
+            System.out.println(map.getValue());
+            sum += map.getValue();
+        }
+        return sum;
     }
 
 }

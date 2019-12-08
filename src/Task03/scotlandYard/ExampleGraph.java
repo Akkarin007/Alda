@@ -60,7 +60,7 @@ public class ExampleGraph {
 		coords.put(10,new Point( 0, 0));	
 	}
 
-	private static void initializeGraph() {
+	private static void initializeGraph() throws Exception {
 		addEdgeBothDirections(1, 2);
 		addEdgeBothDirections(1,10);	
 		addEdgeBothDirections(2, 3);
@@ -74,7 +74,7 @@ public class ExampleGraph {
 		addEdgeBothDirections(9,10);
 	}
 	
-	private static void addEdgeBothDirections(int v, int w) {
+	private static void addEdgeBothDirections(int v, int w) throws Exception {
 		double d = dist(v,w);
 		g.addEdge(v, w, d);
 		g.addEdge(w, v, d);

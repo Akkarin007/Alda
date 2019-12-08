@@ -25,7 +25,7 @@ public class ShortestPath<V> {
     Map<V, V> pred; // Vorgänger für jeden Knoten
     private final DirectedGraph<V> myGraph;
     private Heuristic<V> heuristic;
-    private V start,end;
+    private V start, end;
 
     /**
      * Konstruiert ein Objekt, das im Graph g k&uuml;rzeste Wege
@@ -73,14 +73,13 @@ public class ShortestPath<V> {
      */
     public void searchShortestPath(V s, V g) throws Exception {
         shortestPath(s, g, myGraph, dist, pred);
-        System.out.println(pred);
     }
 
 
     boolean shortestPath(V s, V z, DirectedGraph<V> g, Map<V, Double> d, Map<V, V> p) throws Exception {
-        start =s;
+        start = s;
         end = z;
-        List<V> kl = new LinkedList<>(); // leere Kandidatenliste
+       Set<V> kl = new TreeSet<>(); // leere Kandidatenliste
 
         for (var v : g.getVertexSet()) {
             d.put(v, Double.MAX_VALUE);
@@ -94,16 +93,22 @@ public class ShortestPath<V> {
         while (!kl.isEmpty()) {
 
             double minimalDist = Double.MAX_VALUE;
-            int minimalIdx = 0;
-            for (int i = 0; i < kl.size(); ++i)
-                if (d.get(kl.get(i)) < minimalDist) {
-                    minimalDist = d.get(kl.get(i));
+            V minVertex = s;
+            double estimated = 0.0;
 
-                    minimalIdx = i;
+            for (var m : kl) {
+                if(heuristic != null) estimated =heuristic.estimatedCost(m,z);
+
+                if ((d.get(m) + estimated) < minimalDist) {
+                    minimalDist = d.get(m) + estimated;
+                    minVertex = m;
                 }
+            }
 
-            V v = kl.remove(minimalIdx);
-            System.out.printf("Besuche Knoten %d mit d = %f\n", v, d.get(v) );
+            kl.remove(minVertex);
+            V v = minVertex;
+
+            System.out.printf("Besuche Knoten %d mit d = %f\n", v, d.get(v));
 
             if (v == z) // Zielknoten z erreicht
                 return true;
@@ -116,8 +121,7 @@ public class ShortestPath<V> {
 
                 if ((d.get(v) + g.getWeight(v, w)) < d.get(w)) {
                     p.put(w, v);
-
-                    d.put(w, (d.get(v) + g.getWeight(v, w)));
+                    d.put(w, (d.get(v) + g.getWeight(w, v)));
                 }
 
             }
@@ -139,10 +143,10 @@ public class ShortestPath<V> {
         return path;
     }
 
-    List<V> next(V v){
+    List<V> next(V v) {
         List<V> list = new LinkedList<>();
         list.add(v);
-        if(v != start){
+        if (v != start) {
             list.addAll(next(pred.get(v)));
         }
         return list;
@@ -156,7 +160,7 @@ public class ShortestPath<V> {
      * @throws IllegalArgumentException falls kein kürzester Weg berechnet wurde.
      */
     public double getDistance() {
-       return dist.get(end);
+        return dist.get(end);
     }
 
 }

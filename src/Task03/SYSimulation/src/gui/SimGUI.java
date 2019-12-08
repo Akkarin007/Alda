@@ -1,6 +1,6 @@
 package Task03.SYSimulation.src.gui;
 
-import gui.Toolbar.ToolbarState;
+import Task03.SYSimulation.src.gui.Toolbar.ToolbarState;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

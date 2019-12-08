@@ -1,8 +1,7 @@
 package Task03.scotlandYard;
 
-import graph.*;
+import Task03.SYSimulation.src.sim.SYSimulation;
 import java.io.FileNotFoundException;
-import sim.SYSimulation;
 import java.awt.Color;
 import java.io.IOException;
 
@@ -33,7 +32,7 @@ public class ScotlandYard {
 	 * @return Gerichteter und Gewichteter Graph für Scotland-Yard.
 	 * @throws FileNotFoundException
 	 */
-	public static DirectedGraph<Integer> getGraph() throws FileNotFoundException {
+	public static DirectedGraph<Integer> getGraph() throws Exception {
 
 		DirectedGraph<Integer> sy_graph = new AdjacencyListDirectedGraph<>();
 		Scanner in = new Scanner(new File("ScotlandYard_Kanten.txt"));
@@ -74,7 +73,7 @@ public class ScotlandYard {
 	 * @param args wird nicht verewendet.
 	 * @throws FileNotFoundException
 	 */
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws Exception {
 
 		DirectedGraph<Integer> syGraph = getGraph();
 		
@@ -141,11 +140,11 @@ class ScotlandYardHeuristic implements Heuristic<Integer> {
 	}
 
 	public ScotlandYardHeuristic() throws FileNotFoundException {
-		// ...
+		throw new UnsupportedOperationException("not supported yet");
 	}
 
 	public double estimatedCost(Integer u, Integer v) {
-		// ...
+		throw new UnsupportedOperationException("not supported yet");
 	}
 }
 

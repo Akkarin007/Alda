@@ -1,6 +1,5 @@
 package Task03.scotlandYard;
 
-import directedGraph.*;
 import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.TreeMap;
@@ -81,7 +80,7 @@ public class ExampleGraph {
 		g.addEdge(w, v, d);
 	}
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws Exception {
 		initializeCoordinates();
 		initializeGraph();
 		

@@ -1,9 +1,9 @@
 package Task03.SYSimulation.src.sim;
+import Task03.SYSimulation.src.gui.SimGUI;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
-
-import gui.SimGUI;
 
 
 /** <b>Scotland Yard Simulation, Algorithmen und Datenstrukturen, WS 2011/2012</b><p>

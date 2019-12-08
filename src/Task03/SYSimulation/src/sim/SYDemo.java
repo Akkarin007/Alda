@@ -1,6 +1,6 @@
 package Task03.SYSimulation.src.sim;
 
-import sim.SYSimulation;
+import  Task03.SYSimulation.src.sim.SYSimulation;
 import java.awt.Color;
 import java.io.IOException;
 

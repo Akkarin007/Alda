@@ -4,12 +4,12 @@
 package Task03.scotlandYard;
 
 import Task03.SYSimulation.src.sim.SYSimulation;
+import com.sun.source.tree.Tree;
 
 
-import java.util.LinkedList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 // ...
 
 /**
@@ -22,12 +22,13 @@ import java.util.TreeMap;
 public class ShortestPath<V> {
 
     SYSimulation sim = null;
+    List<V> besuchtOrder = new LinkedList<>();
 
     Map<V, Double> dist; // Distanz für jeden Knoten
-    Map<V, V> pred; // Vorgänger für jeden Knoten
-	private final DirectedGraph<V> myGraph;
+    public Map<V, V> pred; // Vorgänger für jeden Knoten
+    private final DirectedGraph<V> myGraph;
     private Heuristic<V> heuristic;
-
+    private V start, end;
 
     /**
      * Konstruiert ein Objekt, das im Graph g k&uuml;rzeste Wege
@@ -74,37 +75,86 @@ public class ShortestPath<V> {
      * @param g Zielknoten
      */
     public void searchShortestPath(V s, V g) throws Exception {
-        shortestPath(s,g, myGraph, dist, pred);
+        shortestPath(s, g, myGraph, dist, pred);
+        if (sim != null) simulatePath();
+    }
+
+    private void simulatePath() {
+        sim.startSequence("hallo");
+        List<V> shortestPath = getShortestPath();
+        List<V> sp2 = getBesuchtOrder();
+        Set<V> besuchte = new TreeSet<>();
+        System.out.println(sp2 + " ---------------------------------------------");
+        int a = -1;
+        for (V b : sp2) {
+            if (a != -1 && !besuchte.contains(b)) {
+                if (shortestPath.contains(b)) sim.drive((Integer) pred.get(b), (Integer) b, Color.RED);
+                else sim.drive((Integer) pred.get(b), (Integer) b, Color.black);
+                besuchte.add(b);
+                sim.visitStation((Integer) b);
+            }
+            a = (int) b;
+
+
+        }
+        sim.stopSequence();
     }
 
 
     boolean shortestPath(V s, V z, DirectedGraph<V> g, Map<V, Double> d, Map<V, V> p) throws Exception {
-        List<V> kl = new LinkedList<>(); // leere Kandidatenliste
+        start = s;
+        end = z;
+        Set<V> kl = new TreeSet<>(); // leere Kandidatenliste
+
         for (var v : g.getVertexSet()) {
-            d.put(v, -1.0);
-            p.put(v, null);
+            d.put(v, Double.MAX_VALUE);
         }
+
         d.put(s, 0.0); // Startknoten
+
         kl.add(s);
-
+        besuchtOrder.add(s);
+        System.out.println(kl);
         while (!kl.isEmpty()) {
-            double minimalDist = Double.MAX_VALUE;
-            int minimalIdx = 0;
-            for (int i = 0; i < kl.size(); ++i)
-                if (d.get(kl.get(i)) < minimalDist) {
-                    minimalDist = d.get(kl.get(i));
-                    minimalIdx = i;
-                }
 
-            V v = kl.remove(minimalIdx);
-            for (var w : g.getSuccessorVertexSet(v)) {
-                if (d.get(w) == -1.0) // w noch nicht besucht und nicht in Kandidatenliste
-                    kl.add(w);
-                if (d.get(v) + g.getWeight(v, w) < d.get(w)) {
-                    p.put(w, v);
-                    d.put(w, d.get(v) + g.getWeight(v, w));
+            double minimalDist = Double.MAX_VALUE;
+            V minVertex = s;
+            double estimated = 0.0;
+
+            for (var m : kl) {
+                if (heuristic != null) estimated = heuristic.estimatedCost(m, z);
+
+                if ((d.get(m) + estimated) < minimalDist) {
+                    minimalDist = d.get(m) + estimated;
+                    minVertex = m;
                 }
             }
+
+            kl.remove(minVertex);
+            V v = minVertex;
+
+            System.out.printf("Besuche Knoten %d mit d = %f\n", v, d.get(v));
+            besuchtOrder.add(v);
+
+            if (v == z) // Zielknoten z erreicht
+            {
+                besuchtOrder.add(z);
+                return true;
+            }
+            for (var w : g.getSuccessorVertexSet(v)) {
+
+
+                if (!kl.contains(w) && d.get(w) == Double.MAX_VALUE) { // w noch nicht besucht und nicht in Kandidatenliste
+                    kl.add(w);
+                    besuchtOrder.add(w);
+                }
+                if ((d.get(v) + g.getWeight(v, w)) < d.get(w)) {
+                    p.put(w, v);
+                    d.put(w, (d.get(v) + g.getWeight(w, v)));
+                }
+
+            }
+//            System.out.println(kl);
         }
         return false;
     }
@@ -117,8 +167,24 @@ public class ShortestPath<V> {
      * @throws IllegalArgumentException falls kein kürzester Weg berechnet wurde.
      */
     public List<V> getShortestPath() {
-        throw new UnsupportedOperationException("not supported yet");
+        List<V> path = next(end);
+        Collections.reverse(path);
+        return path;
     }
+
+    List<V> next(V v) {
+        List<V> list = new LinkedList<>();
+        list.add(v);
+        if (v != start) {
+            list.addAll(next(pred.get(v)));
+        }
+        return list;
+    }
+
+    List<V> getBesuchtOrder() {
+        return this.besuchtOrder;
+    }
+
 
     /**
      * Liefert die Länge eines kürzesten Weges von Startknoten s nach Zielknoten g zurück.
@@ -128,7 +194,7 @@ public class ShortestPath<V> {
      * @throws IllegalArgumentException falls kein kürzester Weg berechnet wurde.
      */
     public double getDistance() {
-    	throw new UnsupportedOperationException();
+        return dist.get(end);
     }
 
 }

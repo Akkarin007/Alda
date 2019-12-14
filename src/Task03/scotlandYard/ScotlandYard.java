@@ -41,27 +41,31 @@ public class ScotlandYard {
         Scanner in = new Scanner(new File("ScotlandYard_Kanten.txt"));
 
         String line;
-        int index = 0;
         // Text einlesen und HÃ¤figkeiten aller WÃ¶rter bestimmen:
         while (in.hasNextLine()) {
             line = in.nextLine();
-            String[] wf = line.split(" ");
+            String[] wf = line.split("\\s+");
             System.out.println(line);
-            int dist = 0;
-            switch (wf[2]) {
-                case "Taxi":
+            double dist = 0;
+            switch (wf[2].toLowerCase()) {
+                case "taxi":
                     dist = 2;
                     break;
-                case "UBahn":
+                case "ubahn":
                     dist = 5;
                     break;
-                case "Bus":
+                case "bus":
                     dist = 3;
                     break;
                 default:
                     System.out.println("---------------------------");
             }
-            addEdgeBothDirections(sy_graph, Integer.parseInt(wf[1]), Integer.parseInt(wf[0]), dist);
+            System.out.println("distRead= " + dist);
+            int v1 = Integer.parseInt(wf[0]);
+            int v2 = Integer.parseInt(wf[1]);
+            if (sy_graph.containsEdge(v1, v2) && dist > sy_graph.getWeight(v1, v2)) dist = sy_graph.getWeight(v1, v2);
+
+            addEdgeBothDirections(sy_graph, Integer.parseInt(wf[0]), Integer.parseInt(wf[1]), dist);
 
         }
 
@@ -77,7 +81,7 @@ public class ScotlandYard {
         return sy_graph;
     }
 
-    private static void addEdgeBothDirections(DirectedGraph<Integer> g, int v, int w, int d) throws Exception {
+    private static void addEdgeBothDirections(DirectedGraph<Integer> g, int v, int w, double d) throws Exception {
         g.addEdge(v, w, d);
         g.addEdge(w, v, d);
     }
@@ -110,20 +114,20 @@ public class ScotlandYard {
 
         DirectedGraph<Integer> syGraph = getGraph();
 
-        Heuristic<Integer> syHeuristic = null; // Dijkstra
+        Heuristic<Integer> syHeuristic = getHeuristic(); // Dijkstra
         //Heuristic<Integer> syHeuristic = getHeuristic(); // A*
 
         ShortestPath<Integer> sySp = new ShortestPath<Integer>(syGraph, syHeuristic);
 
-        sySp.searchShortestPath(65, 157);
+
+        sySp.searchShortestPath(65,157);
         System.out.println("Distance = " + sySp.getDistance()); // 9.0
 
-        sySp.searchShortestPath(1, 175);
+        sySp.searchShortestPath(1,175);
         System.out.println("Distance = " + sySp.getDistance()); // 25.0
 
-        sySp.searchShortestPath(1, 173);
+        sySp.searchShortestPath(1,173);
         System.out.println("Distance = " + sySp.getDistance()); // 22.0
-
 
         SYSimulation sim;
         try {
@@ -133,7 +137,7 @@ public class ScotlandYard {
             return;
         }
         sySp.setSimulator(sim);
-        sim.startSequence("Shortest path from 1 to 173");
+//        sim.startSequence("Shortest path from 1 to 173");
 
         //sySp.searchShortestPath(65,157); // 9.0
         //sySp.searchShortestPath(1,175); //25.0
@@ -144,16 +148,16 @@ public class ScotlandYard {
 
         System.out.println("Distance = " + sySp.getDistance());
         List<Integer> sp = sySp.getShortestPath();
+//
+//        int a = -1;
+//        for (int b : sp) {
+//            if (a != -1)
+//                sim.drive(a, b, Color.RED.darker());
+//            sim.visitStation(b);
+//            a = b;
+//        }
 
-        int a = -1;
-        for (int b : sp) {
-            if (a != -1)
-                sim.drive(a, b, Color.RED.darker());
-            sim.visitStation(b);
-            a = b;
-        }
-
-        sim.stopSequence();
+//        sim.stopSequence();
     }
 
 }
@@ -178,8 +182,8 @@ class ScotlandYardHeuristic implements Heuristic<Integer> {
 
         while (in.hasNextLine()) {
             line = in.nextLine();
-            String[] wf = line.split("[\\t|\\s]+");
-            System.out.println(line);
+            String[] wf = line.split("([\\t|\\s])+");
+            System.out.printf("%s, %s, %s\n",wf[0],wf[1],wf[2]);
             coord.put(Integer.parseInt(wf[0]), new Point(Integer.parseInt(wf[1]), Integer.parseInt(wf[2])));
         }
     }

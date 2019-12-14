@@ -4,10 +4,12 @@
 package Task03.scotlandYard;
 
 import Task03.SYSimulation.src.sim.SYSimulation;
+import com.sun.source.tree.Tree;
 
 
-import java.net.DatagramPacket;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 // ...
 
 /**
@@ -20,9 +22,10 @@ import java.util.*;
 public class ShortestPath<V> {
 
     SYSimulation sim = null;
+    List<V> besuchtOrder = new LinkedList<>();
 
     Map<V, Double> dist; // Distanz für jeden Knoten
-    Map<V, V> pred; // Vorgänger für jeden Knoten
+    public Map<V, V> pred; // Vorgänger für jeden Knoten
     private final DirectedGraph<V> myGraph;
     private Heuristic<V> heuristic;
     private V start, end;
@@ -73,22 +76,44 @@ public class ShortestPath<V> {
      */
     public void searchShortestPath(V s, V g) throws Exception {
         shortestPath(s, g, myGraph, dist, pred);
+        if (sim != null) simulatePath();
+    }
+
+    private void simulatePath() {
+        sim.startSequence("hallo");
+        List<V> shortestPath = getShortestPath();
+        List<V> sp2 = getBesuchtOrder();
+        Set<V> besuchte = new TreeSet<>();
+        System.out.println(sp2 + " ---------------------------------------------");
+        int a = -1;
+        for (V b : sp2) {
+            if (a != -1 && !besuchte.contains(b)) {
+                if (shortestPath.contains(b)) sim.drive((Integer) pred.get(b), (Integer) b, Color.RED);
+                else sim.drive((Integer) pred.get(b), (Integer) b, Color.black);
+                besuchte.add(b);
+                sim.visitStation((Integer) b);
+            }
+            a = (int) b;
+
+
+        }
+        sim.stopSequence();
     }
 
 
     boolean shortestPath(V s, V z, DirectedGraph<V> g, Map<V, Double> d, Map<V, V> p) throws Exception {
         start = s;
         end = z;
-       Set<V> kl = new TreeSet<>(); // leere Kandidatenliste
+        Set<V> kl = new TreeSet<>(); // leere Kandidatenliste
 
         for (var v : g.getVertexSet()) {
             d.put(v, Double.MAX_VALUE);
-//            p.put(v, );
         }
 
         d.put(s, 0.0); // Startknoten
 
         kl.add(s);
+        besuchtOrder.add(s);
         System.out.println(kl);
         while (!kl.isEmpty()) {
 
@@ -97,7 +122,7 @@ public class ShortestPath<V> {
             double estimated = 0.0;
 
             for (var m : kl) {
-                if(heuristic != null) estimated =heuristic.estimatedCost(m,z);
+                if (heuristic != null) estimated = heuristic.estimatedCost(m, z);
 
                 if ((d.get(m) + estimated) < minimalDist) {
                     minimalDist = d.get(m) + estimated;
@@ -109,16 +134,20 @@ public class ShortestPath<V> {
             V v = minVertex;
 
             System.out.printf("Besuche Knoten %d mit d = %f\n", v, d.get(v));
+            besuchtOrder.add(v);
 
             if (v == z) // Zielknoten z erreicht
+            {
+                besuchtOrder.add(z);
                 return true;
-
+            }
             for (var w : g.getSuccessorVertexSet(v)) {
 
 
-                if (!kl.contains(w) && d.get(w) == Double.MAX_VALUE) // w noch nicht besucht und nicht in Kandidatenliste
+                if (!kl.contains(w) && d.get(w) == Double.MAX_VALUE) { // w noch nicht besucht und nicht in Kandidatenliste
                     kl.add(w);
-
+                    besuchtOrder.add(w);
+                }
                 if ((d.get(v) + g.getWeight(v, w)) < d.get(w)) {
                     p.put(w, v);
                     d.put(w, (d.get(v) + g.getWeight(w, v)));
@@ -151,6 +180,11 @@ public class ShortestPath<V> {
         }
         return list;
     }
+
+    List<V> getBesuchtOrder() {
+        return this.besuchtOrder;
+    }
+
 
     /**
      * Liefert die Länge eines kürzesten Weges von Startknoten s nach Zielknoten g zurück.

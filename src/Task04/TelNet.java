@@ -10,7 +10,7 @@ public class TelNet {
     Map<TelKnoten, Integer> telMap;
     int size = 0;
     List<TelVerbindung> minSpanTree;
-    int lbg ;
+    int lbg;
 
     TelNet(int lbg) {
         telMap = new TreeMap<>();
@@ -30,7 +30,7 @@ public class TelNet {
     }
 
     private List<TelVerbindung> minimumSpanningTree() {
-        UnionFind forest = new UnionFind(6); //{{v} / v ∊V};
+        UnionFind forest = new UnionFind(telMap.size()); //{{v} / v ∊V};
 
         PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(Comparator.comparingInt(a -> a.c));
 
@@ -68,15 +68,25 @@ public class TelNet {
     //    Liefert die Gesamtkosten eines optimalen Telefonnetzes zurück.
     int getOptTelNetKosten() {
         int sum = 0;
-        for (var map: telMap.entrySet()) {
-//            sum+= map.getKey().---------------------------------------------------------------------------------------------------------------------------
-        }
-        return 0;
+        if (getOptTelNet() != null) for (var minList : getOptTelNet()) sum += minList.c;
+        return sum;
     }
 
     //    Anwendung.
-    static void main​(java.lang.String[] args) {
+    public static void main(java.lang.String[] args) {
+        TelNet telNet = new TelNet(7);
 
+        telNet.addTelKnoten​(1, 1);
+        telNet.addTelKnoten​(3, 1);
+        telNet.addTelKnoten​(4, 2);
+        telNet.addTelKnoten​(3, 4);
+        telNet.addTelKnoten​(2, 6);
+        telNet.addTelKnoten​(4, 7);
+        telNet.addTelKnoten​(7, 5);
+        //telNet.computeOptTelNet();
+        //System.out.println("optTelNet = "+telNet.getOptTelNet());
+        //System.out.println("Size = "+ telNet.size);
+        //System.out.println("optCost = " + telNet.getOptTelNetKosten());
     }
 
     //    Liefert die Anzahl der Knoten des Telefonnetzes zurück.

@@ -26,7 +26,53 @@ public class UnionFind {
         return e;
     }
 
-    static void main​(java.lang.String[] args) {
+    public static void main(String[] args) {
+        UnionFind union = new UnionFind(12);
+        union.p[0] = -1;
+        union.p[1] = 0;
+        union.p[2] = 0;
+        union.p[3] = -1;
+        union.p[4] = 6;
+        union.p[5] = -1;
+        union.p[6] = -1;
+        union.p[7] = 4;
+        union.p[8] = 5;
+        union.p[9] = 4;
+        union.p[10] = 6;
+        union.p[11] = 6;
+
+        System.out.println("should be 0 = " + union.find(1));
+        System.out.println("should be 0 = " + union.find(2));
+        System.out.println("should be 0 = " + union.find(0));
+
+        System.out.println("------> find(7) should be 6 = " + union.find(7));
+        System.out.println("------> find(9) should be 6 = " + union.find(9));
+        System.out.println("------> find(4) should be 6 = " + union.find(4));
+        System.out.println("------> find(11) should be 6 = " + union.find(11));
+        System.out.println("------> find(10) should be 6 = " + union.find(10));
+        System.out.println("------> find(6) should be 6 = " + union.find(6));
+
+        System.out.println("------> find(3) should be 3 = " + union.find(3));
+
+        System.out.println("------> find(5) should be 5 = " + union.find(5));
+        System.out.println("------> find(8) should be 5 = " + union.find(8));
+
+
+        union.union(0, 6);
+
+        System.out.println("------> after union(0,6) should be 6 = " + union.find(0));
+
+        union.union(6, 3);
+
+        System.out.println("------> after union(6,3) should be 6 = " + union.find(3));
+
+
+        union.union(6, 5);
+
+        System.out.println("------> after union(6,5) should be 6 = " + union.find(8));
+
+        System.out.println("------> after unions height should be 2 = " + union.getHeight(6));
+
 
     }
 
@@ -41,16 +87,34 @@ public class UnionFind {
     }
 
     void unionByHeight(int s1, int s2) {
+
         if (p[s1] >= 0 || p[s2] >= 0)
             return;
         if (s1 == s2)
             return;
-        if (-p[s1] < -p[s2]) // Höhe von s1 < Höhe von s2
+        int h1 = getHeight(s1);
+        int h2 = getHeight(s2);
+        System.out.printf("height from tree: %d is %d <<>> height from  tree: %d is %d\n",s1,h1,s2,h2);
+        if (h1 < h2) // Höhe von s1 < Höhe von s2
             p[s1] = s2;
         else {
-            if (-p[s1] == -p[s2])
+            if (h1 == h2)
                 p[s1]--; // Höhe von s1 erhöht sich um 1
             p[s2] = s1;
         }
     }
+
+    int getHeight(int s) {
+
+        int height = 0;
+        for (int i = 0; i < p.length; i++) {
+            if (p[i] == s) {
+                if (height < getHeight(i)+1) height = getHeight(i) + 1;
+            }
+
+        }
+        return height;
+    }
+
+
 }

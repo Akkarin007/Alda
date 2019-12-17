@@ -1,14 +1,8 @@
 package Task04;
 
-import Task01.BinaryTreeDictionary;
-import Task01.Dictionary;
-
-import java.util.LinkedList;
-import java.util.List;
-
 public class UnionFind {
-    //Legt eine neue Union-Find-Struktur mit der Partitionierung {{0}, {1}, ..., {n-1}} an.
 
+    //Legt eine neue Union-Find-Struktur mit der Partitionierung {{0}, {1}, ..., {n-1}} an.
     int[] p;
 
     UnionFind(int n) {
@@ -56,29 +50,33 @@ public class UnionFind {
 
         System.out.println("------> find(5) should be 5 = " + union.find(5));
         System.out.println("------> find(8) should be 5 = " + union.find(8));
-
+        System.out.println(">>> size = " + union.size());
 
         union.union(0, 6);
 
         System.out.println("------> after union(0,6) should be 6 = " + union.find(0));
-
+        System.out.println(">>> size = " + union.size());
         union.union(6, 3);
 
         System.out.println("------> after union(6,3) should be 6 = " + union.find(3));
-
+        System.out.println(">>> size = " + union.size());
 
         union.union(6, 5);
 
         System.out.println("------> after union(6,5) should be 6 = " + union.find(8));
-
+        System.out.println(">>> size = " + union.size());
         System.out.println("------> after unions height should be 2 = " + union.getHeight(6));
-
+        System.out.println(">>> size = " + union.size());
 
     }
 
     //Liefert die Anzahl der Mengen in der Partitionierung zurück.
     int size() {
-        throw new UnsupportedOperationException("not supportet yet");
+        int size = 0;
+        for (int i = 0; i < p.length; i++) {
+            if(p[i] == -1) size++;
+        }
+        return size;
     }
 
     //Vereinigt die beiden Menge s1 und s2.

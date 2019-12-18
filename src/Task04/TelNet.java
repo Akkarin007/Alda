@@ -1,9 +1,8 @@
 package Task04;
 
 import java.awt.*;
-import java.time.Period;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 //Klasse zur Verwaltung von Telefonknoten mit (x,y)-Koordinaten und zur Berechnung eines
 // minimal aufspannenden Baums mit dem Algorithmus von Kruskal. Kantengewichte sind durch
@@ -16,7 +15,6 @@ public class TelNet {
     List<TelVerbindung> minSpanTree = new LinkedList<>();
     List<TelVerbindung> edgelist = new LinkedList<>();
     int lbg;
-    TreeSet<TelKnoten> besucht = new TreeSet<>();
 
     TelNet(int lbg) {
         telMap = new TreeMap<>();
@@ -30,85 +28,44 @@ public class TelNet {
         if (y > YMax)
             YMax = y;
         TelKnoten u = new TelKnoten(x, y);
-        if (telMap.containsKey(u))return false;
-        telMap.put(u, size++);
+        if (telMap.containsKey(u)) return false;
+        else telMap.put(u, size++);
 
         int endCost = Integer.MAX_VALUE;
-        int jmin = 0;
 
         TelKnoten endV = null;
         for (var map : telMap.entrySet()) {
-
             TelKnoten v = map.getKey();
-            int secondCost = cost(u, v);
+            if (!u.equals(v)) {
+                int secondCost = cost(u, v);
 
-            if (secondCost<=lbg&&!v.equals(u) && secondCost < endCost) {
-                endV = v;
-                endCost = secondCost;
+                if (secondCost <= lbg && secondCost < endCost) {
+                    endCost = secondCost;
+                    TelVerbindung c = new TelVerbindung(u, v, endCost);
+                    TelVerbindung cr = new TelVerbindung(v, u, endCost);
+                    if (!edgelist.contains(c)) {
+                        edgelist.add(c);
+                        edgelist.add(cr);
+
+                    }
+                }
             }
         }
-        if (endCost <= lbg) {
-            TelVerbindung c = new TelVerbindung(u, endV, endCost);
-            TelVerbindung cr = new TelVerbindung(endV, u, endCost);
-            if (!edgelist.contains(c)) {
-                edgelist.add(c);
-                edgelist.add(cr);
-            }
-        }
-//        System.out.println(edgelist);
         return true;
     }
 
     //    Berechnet ein optimales Telefonnetz als minimal aufspannenden Baum mit dem Algorithmus von Kruskal.
     boolean computeOptTelNet() {
-        minSpanTree = minimumSpanningTree();
+        minSpanTree.addAll(minimumSpanningTree());
         return true;
     }
 
-    PriorityQueue<TelVerbindung> addTelVerbindung() {
-
-        PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(Comparator.comparingInt(a -> a.c));
-        for (int i = 0; i < telMap.size(); i++) {
-
-            int endCost = Integer.MAX_VALUE;
-            int jmin = 0;
-            TelKnoten u = getTelKnoten(i);
-
-            for (int j = 0; j < telMap.size(); j++) {
-
-                TelKnoten v = getTelKnoten(j);
-                int secondCost = cost(u, v);
-
-                if (i != j && secondCost < endCost) {
-                    jmin = j;
-                    endCost = secondCost;
-                }
-            }
-            if (i != jmin && endCost <= lbg) {
-                TelKnoten v = getTelKnoten(jmin);
-                edges.add(new TelVerbindung(u, v, endCost));
-                edges.add(new TelVerbindung(v, u, endCost));
-            }
-        }
-
-        return edges;
-
-    }
-
-    private int getConnectionWeight(TelKnoten n, TelKnoten v) {
-        for (TelVerbindung telV : edgelist) {
-            if (telV.u == n && telV.v == v) {
-                return telV.c;
-            }
-        }
-        return lbg;
-    }
 
     List<TelVerbindung> minimumSpanningTree() {
         UnionFind forest = new UnionFind(size()); //{{v} / v ∊V};
 
-        PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(Comparator.comparingInt(a -> a.c));
-        edges.addAll(edgelist);
+        PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(edgelist);
+
         System.out.printf("size edgelist = %d \n", edges.size());
         System.out.printf("forest size = %d \n", forest.size());
 

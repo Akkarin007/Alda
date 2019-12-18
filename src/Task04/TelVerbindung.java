@@ -1,7 +1,7 @@
 package Task04;
 
 //Klasse für eine Telefonverbindung.
-public class TelVerbindung {
+public class TelVerbindung implements Comparable<TelVerbindung> {
 
     //Verbindungskosten
     int c;
@@ -19,6 +19,14 @@ public class TelVerbindung {
         this.c = c;
     }
 
+    public int compareTo(TelVerbindung o) {
+        if (c < o.c)
+            return -1;
+        if (c > o.c)
+            return 1;
+
+        return 0;
+    }
 
     @Override
     public String toString() {

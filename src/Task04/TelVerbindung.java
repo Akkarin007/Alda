@@ -18,4 +18,11 @@ public class TelVerbindung {
         this.v = v;
         this.c = c;
     }
+
+
+    @Override
+    public String toString() {
+        return "Verbindung from " + u + " " +
+                v + "Cost " + c;
+    }
 }

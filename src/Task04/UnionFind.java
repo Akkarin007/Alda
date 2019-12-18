@@ -92,7 +92,7 @@ public class UnionFind {
             return;
         int h1 = getHeight(s1);
         int h2 = getHeight(s2);
-        System.out.printf("height from tree: %d is %d <<>> height from  tree: %d is %d\n",s1,h1,s2,h2);
+        //System.out.printf("height from tree: %d is %d <<>> height from  tree: %d is %d\n",s1,h1,s2,h2);
         if (h1 < h2) // Höhe von s1 < Höhe von s2
             p[s1] = s2;
         else {

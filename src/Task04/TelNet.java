@@ -1,6 +1,7 @@
 package Task04;
 
 import java.awt.*;
+import java.time.Period;
 import java.util.*;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class TelNet {
     Map<TelKnoten, Integer> telMap;
     int size = 0;
     List<TelVerbindung> minSpanTree = new LinkedList<>();
-    PriorityQueue<TelVerbindung> edgelist;
+    List<TelVerbindung> edgelist = new LinkedList<>();
     int lbg;
     TreeSet<TelKnoten> besucht = new TreeSet<>();
 
@@ -28,9 +29,32 @@ public class TelNet {
             XMax = x;
         if (y > YMax)
             YMax = y;
-        for (var map : telMap.entrySet()) if (map.getKey().x == x && map.getKey().y == y) return false;
-        telMap.put(new TelKnoten(x, y), size++);
-        edgelist = addTelVerbindung();
+        TelKnoten u = new TelKnoten(x, y);
+        if (telMap.containsKey(u))return false;
+        telMap.put(u, size++);
+
+        int endCost = Integer.MAX_VALUE;
+        int jmin = 0;
+
+        TelKnoten endV = null;
+        for (var map : telMap.entrySet()) {
+
+            TelKnoten v = map.getKey();
+            int secondCost = cost(u, v);
+
+            if (secondCost<=lbg&&!v.equals(u) && secondCost < endCost) {
+                endV = v;
+                endCost = secondCost;
+            }
+        }
+        if (endCost <= lbg) {
+            TelVerbindung c = new TelVerbindung(u, endV, endCost);
+            TelVerbindung cr = new TelVerbindung(endV, u, endCost);
+            if (!edgelist.contains(c)) {
+                edgelist.add(c);
+                edgelist.add(cr);
+            }
+        }
 //        System.out.println(edgelist);
         return true;
     }
@@ -53,7 +77,7 @@ public class TelNet {
             for (int j = 0; j < telMap.size(); j++) {
 
                 TelKnoten v = getTelKnoten(j);
-                int secondCost = cost(u.x, u.y, v.x, v.y);
+                int secondCost = cost(u, v);
 
                 if (i != j && secondCost < endCost) {
                     jmin = j;
@@ -71,6 +95,15 @@ public class TelNet {
 
     }
 
+    private int getConnectionWeight(TelKnoten n, TelKnoten v) {
+        for (TelVerbindung telV : edgelist) {
+            if (telV.u == n && telV.v == v) {
+                return telV.c;
+            }
+        }
+        return lbg;
+    }
+
     List<TelVerbindung> minimumSpanningTree() {
         UnionFind forest = new UnionFind(size()); //{{v} / v ∊V};
 
@@ -81,23 +114,23 @@ public class TelNet {
 
         List<TelVerbindung> minSpanTree2 = new LinkedList<>();
         while (forest.size() != 1 && !edges.isEmpty()) {
-            TelVerbindung x = edges.poll();
+            TelVerbindung telVerb = edges.poll();
 
-            int t1 = forest.find(telMap.get(x.u)); //teilBaum
-            int t2 = forest.find(telMap.get(x.v)); // teilBaum
+            int t1 = forest.find(telMap.get(telVerb.u)); //teilBaum
+            int t2 = forest.find(telMap.get(telVerb.v)); // teilBaum
             System.out.printf("t1 = %d, t2 = %d \n", t1, t2);
             if (t1 != t2) {
                 forest.union(t1, t2); //big TeilBaum
-                minSpanTree2.add(x);
-                for (int i = 0; i < forest.p.length; i++) System.out.printf("p[%d] = %d, \n", i, forest.p[i]);
-                System.out.printf("removed value: %d forest size = %d \n", x.c, forest.size());
+                minSpanTree2.add(telVerb);
+//                for (int i = 0; i < forest.p.length; i++) System.out.printf("p[%d] = %d, \n", i, forest.p[i]);
+                System.out.printf("removed value: %d forest size = %d \n", telVerb.c, forest.size());
             }
         }
 //
 //        if (edges.isEmpty() && forest.size() != 1)
 //            return null; //“es existiert kein aufspannender Baum”;
 //        else
-            return minSpanTree2;
+        return minSpanTree2;
     }
 
 
@@ -151,11 +184,11 @@ public class TelNet {
         return minSpanTree;
     }
 
-    int cost(int x1, int y1, int x2, int y2) {
+    int cost(TelKnoten a, TelKnoten b) {
 
-        int a = Math.abs(x1 - x2);
-        int b = Math.abs(y1 - y2);
-        int result = a + b;
+        int e1 = Math.abs(a.x - b.x);
+        int e2 = Math.abs(a.y - b.y);
+        int result = e1 + e2;
         if (result <= lbg) return result;
         else return Integer.MAX_VALUE;
     }
@@ -169,8 +202,8 @@ public class TelNet {
 
     //    Anwendung.
     public static void main(java.lang.String[] args) {
-        test1();
-//        test2();
+//        test1();
+        test2();
     }
 
     private static void test2() {

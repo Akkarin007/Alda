@@ -65,7 +65,6 @@ public class UnionFind {
 
         System.out.println("------> after union(6,5) should be 6 = " + union.find(8));
         System.out.println(">>> size = " + union.size());
-        System.out.println("------> after unions height should be 2 = " + union.getHeight(6));
         System.out.println(">>> size = " + union.size());
 
     }
@@ -73,8 +72,8 @@ public class UnionFind {
     //Liefert die Anzahl der Mengen in der Partitionierung zurück.
     int size() {
         int size = 0;
-        for (int i = 0; i < p.length; i++) {
-            if(p[i] == -1) size++;
+        for (int value : p) {
+            if (value < 0) size++;
         }
         return size;
     }
@@ -90,29 +89,12 @@ public class UnionFind {
             return;
         if (s1 == s2)
             return;
-        int h1 = getHeight(s1);
-        int h2 = getHeight(s2);
-        //System.out.printf("height from tree: %d is %d <<>> height from  tree: %d is %d\n",s1,h1,s2,h2);
-        if (h1 < h2) // Höhe von s1 < Höhe von s2
+        if (-p[s1] < -p[s2]) {// Höhe von s1 < Höhe von s2
             p[s1] = s2;
-        else {
-            if (h1 == h2)
+        } else {
+            if (-p[s1] == -p[s2])
                 p[s1]--; // Höhe von s1 erhöht sich um 1
             p[s2] = s1;
         }
     }
-
-    int getHeight(int s) {
-
-        int height = 0;
-        for (int i = 0; i < p.length; i++) {
-            if (p[i] == s) {
-                if (height < getHeight(i)+1) height = getHeight(i) + 1;
-            }
-
-        }
-        return height;
-    }
-
-
 }

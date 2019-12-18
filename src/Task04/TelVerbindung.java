@@ -22,7 +22,7 @@ public class TelVerbindung {
 
     @Override
     public String toString() {
-        return "Verbindung from " + u + " " +
-                v + "Cost " + c;
+        return u + " " +
+                v + "Cost " + c + "\n";
     }
 }

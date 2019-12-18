@@ -8,11 +8,14 @@ import java.util.List;
 // minimal aufspannenden Baums mit dem Algorithmus von Kruskal. Kantengewichte sind durch
 // den Manhattan-Abstand definiert.
 public class TelNet {
-
+    int XMax = 0;
+    int YMax = 0;
     Map<TelKnoten, Integer> telMap;
     int size = 0;
-    List<TelVerbindung> minSpanTree;
+    List<TelVerbindung> minSpanTree = new LinkedList<>();
+    PriorityQueue<TelVerbindung> edgelist;
     int lbg;
+    TreeSet<TelKnoten> besucht = new TreeSet<>();
 
     TelNet(int lbg) {
         telMap = new TreeMap<>();
@@ -21,60 +24,98 @@ public class TelNet {
 
     //Fügt einen neuen Telefonknoten mit Koordinate (x,y) dazu.
     boolean addTelKnoten(int x, int y) {
+        if (x > XMax)
+            XMax = x;
+        if (y > YMax)
+            YMax = y;
         for (var map : telMap.entrySet()) if (map.getKey().x == x && map.getKey().y == y) return false;
         telMap.put(new TelKnoten(x, y), size++);
+        edgelist = addTelVerbindung();
+//        System.out.println(edgelist);
         return true;
     }
 
     //    Berechnet ein optimales Telefonnetz als minimal aufspannenden Baum mit dem Algorithmus von Kruskal.
     boolean computeOptTelNet() {
         minSpanTree = minimumSpanningTree();
-        //System.out.println(minSpanTree);
         return true;
     }
 
-    private List<TelVerbindung> minimumSpanningTree() {
-        UnionFind forest = new UnionFind(size); //{{v} / v ∊V};
+    PriorityQueue<TelVerbindung> addTelVerbindung() {
 
-        PriorityQueue<TelVerbindung> edges = getOptTelNet();
+        PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(Comparator.comparingInt(a -> a.c));
+        for (int i = 0; i < telMap.size(); i++) {
+
+            int endCost = Integer.MAX_VALUE;
+            int jmin = 0;
+            TelKnoten u = getTelKnoten(i);
+
+            for (int j = 0; j < telMap.size(); j++) {
+
+                TelKnoten v = getTelKnoten(j);
+                int secondCost = cost(u.x, u.y, v.x, v.y);
+
+                if (i != j && secondCost < endCost) {
+                    jmin = j;
+                    endCost = secondCost;
+                }
+            }
+            if (i != jmin && endCost <= lbg) {
+                TelKnoten v = getTelKnoten(jmin);
+                edges.add(new TelVerbindung(u, v, endCost));
+                edges.add(new TelVerbindung(v, u, endCost));
+            }
+        }
+
+        return edges;
+
+    }
+
+    List<TelVerbindung> minimumSpanningTree() {
+        UnionFind forest = new UnionFind(size()); //{{v} / v ∊V};
+
+        PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(Comparator.comparingInt(a -> a.c));
+        edges.addAll(edgelist);
         System.out.printf("size edgelist = %d \n", edges.size());
         System.out.printf("forest size = %d \n", forest.size());
 
-        List<TelVerbindung> minSpanTree = new LinkedList<>();
+        List<TelVerbindung> minSpanTree2 = new LinkedList<>();
         while (forest.size() != 1 && !edges.isEmpty()) {
-            TelVerbindung x = edges.remove();
+            TelVerbindung x = edges.poll();
 
-            int t1 = forest.find(telMap.get(x.u));
-            int t2 = forest.find(telMap.get(x.v));
+            int t1 = forest.find(telMap.get(x.u)); //teilBaum
+            int t2 = forest.find(telMap.get(x.v)); // teilBaum
+            System.out.printf("t1 = %d, t2 = %d \n", t1, t2);
             if (t1 != t2) {
-                forest.union(t1, t2);
-                minSpanTree.add(x);
+                forest.union(t1, t2); //big TeilBaum
+                minSpanTree2.add(x);
+                for (int i = 0; i < forest.p.length; i++) System.out.printf("p[%d] = %d, \n", i, forest.p[i]);
                 System.out.printf("removed value: %d forest size = %d \n", x.c, forest.size());
             }
         }
-        if (edges.isEmpty() && forest.size() != 1)
-            return null; //“es existiert kein aufspannender Baum”;
-        else
-            return minSpanTree;
+//
+//        if (edges.isEmpty() && forest.size() != 1)
+//            return null; //“es existiert kein aufspannender Baum”;
+//        else
+            return minSpanTree2;
     }
+
 
     //    Zeichnet das gefundene optimale Telefonnetz mit der Größe xMax*yMax in ein Fenster.
     void drawOptTelNet(int xMax, int yMax) {
         StdDraw.clear();
         StdDraw.setCanvasSize(xMax, yMax);
-        PriorityQueue<TelVerbindung> list =  getOptTelNet();
-        double pen = 1.0 / xMax;//300
+        List<TelVerbindung> list = getOptTelNet();
+        double pen = 1.0 / XMax;//300
         if (pen > 0.03)
             pen = 1.0 / 300;
-        double factorX = 1.0 / xMax;//100
-        double factorY = 1.0 / yMax;//100
+        double factorX = 1.0 / XMax;//100
+        double factorY = 1.0 / YMax;//100
         for (TelVerbindung v : list) {
             double x1 = (v.u.x) * factorX;
             double y1 = (v.u.y) * factorY;
             double x2 = (v.v.x) * factorX;
             double y2 = (v.v.y) * factorY;
-
-
 
             StdDraw.setPenColor(Color.BLUE);
             double penSquare = pen * 2;
@@ -105,45 +146,9 @@ public class TelNet {
         return null;
     }
 
-    //    Liefert ein optimales Telefonnetz als Liste von Telefonverbindungen zurück.
-    PriorityQueue<TelVerbindung> getOptTelNet() {
-        PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(Comparator.comparingInt(a -> a.c));
-        for (int i = 0; i < telMap.size(); i++) {
-
-            int endCost = Integer.MAX_VALUE;
-            int jmin = -1;
-            TelKnoten u = getTelKnoten(i);
-
-            for (int j = 0; j < telMap.size(); j++) {
-
-                TelKnoten v = getTelKnoten(j);
-                int secondCost = cost(u.x, u.y, v.x, v.y);
-
-                if (i != j && secondCost < endCost) {
-                    jmin = j;
-                    endCost = secondCost;
-                }
-            }
-
-            if (jmin != -1 && endCost <= lbg) {
-                TelKnoten v = getTelKnoten(jmin);
-
-                boolean valid = true;
-                for (var list : edges)
-                    if (list.u.equals(u) && list.v.equals(v) || list.u.equals(v) && list.v.equals(u)) {
-                        valid = false;
-                        break;
-                    }
-
-                if (valid) {
-                    edges.add(new TelVerbindung(u, v, endCost));
-                    System.out.println(endCost);
-                    //System.out.println(endCost);
-                }
-            }
-        }
-
-        return edges;
+    //    Liefemrt ein optimales Telefonnetz als Liste von Telefonverbindungen zurück.
+    List<TelVerbindung> getOptTelNet() {
+        return minSpanTree;
     }
 
     int cost(int x1, int y1, int x2, int y2) {
@@ -164,6 +169,24 @@ public class TelNet {
 
     //    Anwendung.
     public static void main(java.lang.String[] args) {
+        test1();
+//        test2();
+    }
+
+    private static void test2() {
+        TelNet telNetRandom = new TelNet(100);
+        telNetRandom.generateRandomTelNet(1000, 1000, 1000);
+
+        telNetRandom.computeOptTelNet();
+
+        //System.out.println("optTelNet = " + telNet.getOptTelNet());
+        System.out.println("Size = " + telNetRandom.size);
+        System.out.println("optCost = " + telNetRandom.getOptTelNetKosten());
+
+        telNetRandom.drawOptTelNet(700, 700);
+    }
+
+    private static void test1() {
         TelNet telNet = new TelNet(7);
 
         telNet.addTelKnoten(1, 1);
@@ -175,20 +198,9 @@ public class TelNet {
         telNet.addTelKnoten(7, 5);
         telNet.computeOptTelNet();
 
-        //System.out.println("optTelNet = " + telNet.getOptTelNet());
+        System.out.println("optTelNet = " + telNet.getOptTelNet());
         System.out.println("Size = " + telNet.size);
         System.out.println("optCost = " + telNet.getOptTelNetKosten());
-
-        TelNet telNetRandom = new TelNet(100);
-        telNetRandom.generateRandomTelNet(1000,1000,1000);
-
-        telNetRandom.computeOptTelNet();
-
-        //System.out.println("optTelNet = " + telNet.getOptTelNet());
-        System.out.println("Size = " + telNetRandom.size);
-        System.out.println("optCost = " + telNetRandom.getOptTelNetKosten());
-
-        telNetRandom.drawOptTelNet(700, 700);
     }
 
     //    Liefert die Anzahl der Knoten des Telefonnetzes zurück.
